@@ -15,7 +15,7 @@ const char* IOT_APP_ID = "USERNAME-MQTT-BROKER";
 const char* IOT_APP_PASSWD = "PASSWORD-MQTT-BROKER";
 ```
 
-Upload Sketch to your board, Serial Monitor should provide you debug info if things fail. Use a multimeter to detect the right ports on your terminal from your door opener (should list no more than 5V, do not connect if 110V or higher!) and connect the relay to this terminal.
+Upload Sketch to your board, Serial Monitor should provide you debug info if things fail. Use a multimeter to detect the right ports on your terminal from your door opener (should list no more than 5V, do not connect if 110V or higher!) and connect the relay to this terminal. This sketch uses SSL to connect to MQTT Broker (Mosquito in my case). I upoloded the SSL certificate for my broker using the Arduino tool.
 
 ## Hardware list
 - [Arduino MKR 1010 WiFi](https://store.arduino.cc/arduino-mkr-wifi-1010)
