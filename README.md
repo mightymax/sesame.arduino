@@ -7,7 +7,7 @@ Arduino Sketch file used to open the door of my garage, including Open/Close det
 Create a new file in this folder called "secrets.h". Add the following lines and save the file before compiling & uploading to your board:
 
 `
-// Important Note: passord length must be 8+ characters or AP creation failed`
+// Important Note: passord length must be 8+ characters or AP creation failed
 char ssid[] = "YOUR-AP-SSID";
 char pass[] = "YOUR-AP-PASSWD";
 
