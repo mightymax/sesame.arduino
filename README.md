@@ -8,18 +8,7 @@ These sketches uses SSL to connect to MQTT Broker (Mosquito in my case). I upolo
 ## Controller
 
 ### Install
-Create a new file in this folder called "secrets.h". Add the following lines and save the file before compiling & uploading to your board:
-
-```c_cpp
-// Important Note: passord length must be 8+ characters or AP creation failed
-char ssid[] = "YOUR-AP-SSID";
-char pass[] = "YOUR-AP-PASSWD";
-
-const char* IOT_APP_ID = "USERNAME-MQTT-BROKER";
-const char* IOT_APP_PASSWD = "PASSWORD-MQTT-BROKER";
-```
-
-Upload Sketch to your board, Serial Monitor should provide you debug info if things fail. Use a multimeter to detect the right ports on your terminal from your door opener (should list no more than 5V, do not connect if 110V or higher!) and connect the relay to this terminal. 
+Move "secrets-examples.h" to "secrets.h", modify and save the file before compiling & uploading to your board. Upload Sketch to your board, Serial Monitor should provide you debug info if things fail. Use a multimeter to detect the right ports on your terminal from your door opener (should list no more than 5V, do not connect if 110V or higher!) and connect the relay to this terminal. 
 
 ### Hardware list
 - [Arduino MKR 1010 WiFi](https://store.arduino.cc/arduino-mkr-wifi-1010)
@@ -38,15 +27,4 @@ Upload Sketch to your board, Serial Monitor should provide you debug info if thi
 ## Range sensor
 
 ### Install
-Create a new file in this folder called "secrets.h". Add the following lines and save the file before compiling & uploading to your board:
-
-```c_cpp
-#define SECRET_SSID "YOUR-AP-SSID"
-#define SECRET_PASS "YOUR-AP-PASSWD"
-
-const char* IOT_APP_USERNAME = "USERNAME-MQTT-BROKER";
-const char* IOT_APP_PASSWD = "PASSWORD-MQTT-BROKER";
-const char* IOT_APP_CLIENT_ID = "Hw40DoorSensor" ;
-```
-
-Upload Sketch to your board, Serial Monitor should provide you debug info if things fail. 
+Move "secrets-examples.h" to "secrets.h", modify and save the file before compiling & uploading to your board. Upload Sketch to your board, Serial Monitor should provide you debug info if things fail. 
