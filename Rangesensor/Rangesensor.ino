@@ -15,7 +15,7 @@ char TOPIC_LOGS[]  = "hw40/garage/logs";
 char ssid[] = SECRET_SSID;        // your network SSID (name)
 char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
      // the WiFi radio's status
-Ultrasonic ultrasonic(2);
+Ultrasonic ultrasonic(6);
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -41,10 +41,10 @@ void loop() {
   }
   
   delay(500);
-  long range = ultrasonic.MeasureInCentimeters();
+  long range = ultrasonic.MeasureInCentimeters() + 4;
   const char* payload = std::to_string(range).c_str();
   mqttClient.publish(TOPIC_RANGE, payload);
-//  Serial.println(range);
+  //Serial.println(range);
 }
 
 void mqttReconnect() {
