@@ -5,17 +5,21 @@
  * @See https://github.com/mightymax/sesame.arduino
  */
 #include "Door.h"
-#include "utils.h"
 
 void Door::error(String msg) {
   errorMessage = msg;
-  print(msg.c_str());
+  Serial.println(msg);
 };
 
 bool Door::exec(String command) {
   if (command.equalsIgnoreCase(COMMAND_DOOR_OPEN)) return open();
   else if (command.equalsIgnoreCase(COMMAND_DOOR_CLOSE)) return close();
   else if (command.equalsIgnoreCase(COMMAND_DOOR_TOGGLE)) return toggle();
+  else {
+    char s[50];
+    snprintf_P(s, sizeof(s), PSTR("Unkown command '%s'"), command.c_str());
+    error(String(s));
+  }
 };
 
 bool Door::open() {
@@ -49,26 +53,17 @@ void Door::editSettings(String settings) {
 }
 
 
-Doorstatus Door::setTopRange(int range) {
-  if (range >= -1 && range <= settings.max_possible_external_range) {
-    Doorstatus newStatus = Unkown;
+void Door::setTopRange(int range) {
+  if (range >= -1) {
     this->range.top = range;
-    int delta = previous_top_range - this->range.top;
-    if (abs(delta) >= settings.min_moving_delta) {
-      currentStatus = delta > 0 ? Closing : Opening;
-      movingTimout.reset();
-      previous_top_range = this->range.top;
-    } else if (movingTimout.due()) {
-      //publish current status only if no motion has been detected for the last second:
-      currentStatus = this->range.top < settings.min_range_door_is_open ? Closed : Open;
-    }
+    if (this->previousRange.top <= -1) this->previousRange.top = range;
   }
-  return currentStatus;
 }
 
 void Door::setBottomRange(int range) {
-  if (range >= -1 && range <= settings.max_possible_external_range) {
+  if (range >= -1 && range <= settings.max_possible_range_bottom) {
     this->range.bottom = range;
+    if (this->previousRange.bottom <= -1) this->previousRange.bottom = range;
   }
 }
 
@@ -80,6 +75,22 @@ void Door::setBottomRange(String range) {
 };
 
 Doorstatus Door::getStatus() {
+  const int delta = previousRange.bottom - range.bottom;
+  if (range.top <= DOOR_MIN_RANGE_TOP_IF_DOOR_IS_OPEN) {
+    currentStatus = Open;
+  } else if (delta != 0 && delta < MIN_MOVING_DELTA ) {
+    currentStatus = Opening;
+    previousRange = range;
+  } else if (delta != 0 && delta > MIN_MOVING_DELTA ) {
+    currentStatus = Closing;
+    previousRange = range;
+  } else if (range.bottom <= DOOR_MIN_RANGE_BOTTOM_IF_DOOR_IS_CLOSED) {
+    currentStatus = Closed;
+  } else if (range.bottom > DOOR_MIN_RANGE_BOTTOM_IF_DOOR_IS_CLOSED) {
+    currentStatus = PartlyOpen;
+  } else {
+    currentStatus = Unkown;
+  }
   return currentStatus;
 }
 
@@ -93,5 +104,6 @@ String Door::getStatusValue(Doorstatus status) {
    if (status == Opening) return "Opening";
    if (status == Closing) return "Closing";
    if (status == Error) return "Error";
-   if (status == Unkown) return "Unkown";
+   if (status == PartlyOpen) return "PartlyOpen";
+   return "Unkown";
 };

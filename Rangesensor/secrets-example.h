@@ -1,6 +1,0 @@
-#define SECRET_SSID "YOUR-AP-SSID"
-#define SECRET_PASS "YOUR-AP-PASSWD"
-
-const char* IOT_APP_USERNAME = "USERNAME-MQTT-BROKER";
-const char* IOT_APP_PASSWD = "PASSWORD-MQTT-BROKER";
-const char* IOT_APP_CLIENT_ID = "RandomClientIdForDoorSensor" 

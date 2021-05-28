@@ -5,29 +5,39 @@
  * @See https://github.com/mightymax/sesame.arduino
  */
 
-#ifndef SESAME_CONTROLLER_H
-#define SESAME_CONTROLLER_H
+
+
+#ifndef SESAME_H
+#define SESAME_H
 
 #include "Messages.h"
 #include "Sensors.h"
 #include "Door.h"
-#include "Board.h"
 #include "Timeout.h"
 
 struct Controller_Timeouts {
-  Timeout range = Timeout(200);
+  Timeout rangeTop = Timeout(1000);
+  Timeout rangeBottom = Timeout(1000);
   Timeout SHT31 = Timeout(60000);
+  Timeout temperature = Timeout(60000);
   Timeout luminosity = Timeout(5000);
+  Timeout doorStatus = Timeout(500);
 };
 
-class Controller {
+enum SesameModus {SesameModusController, SesameModusRangesensor};
+
+class Sesame {
   private:
     Controller_Timeouts timeouts = Controller_Timeouts();
-    Board board = Board();
+    bool hasSubscribed = false;
+
+  protected:
+    SesameModus mode = SesameModusController;
+    Sensors sensors = Sensors();
+    void printSignature();
 
   public:
     Messages messages = Messages();
-    Sensors sensors = Sensors();
     Door door = Door();
     void setup();
     void loop();

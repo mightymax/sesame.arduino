@@ -6,7 +6,6 @@
  */
 
 #include "ENV.h"
-#include "utils.h"
 #include "Messages.h"
 
 void Messages::recieve() {
@@ -14,31 +13,37 @@ void Messages::recieve() {
 }
 
 void Messages::reconnect() {
-  // Loop until we're connected
   bool connectResult = false;
 
   while (!client.connected()) {
-    print("Attempting MQTT connection... ");
+
+    Serial.print("Attempting MQTT connection with Id '");
+    Serial.print(this->id);
+    Serial.print("': ");
     #ifdef MQTT_BROKER_USERNAME
-    connectResult = client.connect(MQTT_BROKER_CLIENT_ID, MQTT_BROKER_USERNAME, MQTT_BROKER_PASSWD);
+    connectResult = client.connect(this->id, MQTT_BROKER_USERNAME, MQTT_BROKER_PASSWD);
     #else
-    connectResult = client.connect(MQTT_BROKER_CLIENT_ID);
+    connectResult = client.connect(this->id);
     #endif
 
     if (connectResult) {
-      print("connected\n");
-      client.subscribe(MQTT_TOPIC_COMMANDS);
-      client.subscribe(MQTT_TOPIC_SENSORS_RANGE_BOTTOM);
+      Serial.println("connected");
     } else {
       char a = client.state();
-      print("failed, rc=%s, try again in 5 seconds ...\n", client.state());
+      char s[50];
+      snprintf_P(s, sizeof(s), PSTR("failed, rc=%s, try again in 5 seconds ..."), client.state());
+      Serial.println(s);
       delay(5000);
     }
   }
 };
 
-void Messages::publishRange(int range) {
+void Messages::publishRangeTop(int range) {
   client.publish(MQTT_TOPIC_SENSORS_RANGE_TOP, String(range).c_str());
+};
+
+void Messages::publishRangeBottom(int range) {
+  client.publish(MQTT_TOPIC_SENSORS_RANGE_BOTTOM, String(range).c_str());
 };
 
 void Messages::publishTemperature(int degrees) {

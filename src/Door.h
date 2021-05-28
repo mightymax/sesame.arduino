@@ -19,19 +19,21 @@
 #define COMMAND_DOOR_CLOSE        "CLOSE"
 #define COMMAND_DOOR_TOGGLE       "TOGGLE"
 
-#define MAX_POSSIBLE_EXTERNAL_RANGE 517
-#define MIN_MOVING_DELTA 2
+#define DOOR_MIN_RANGE_TOP_IF_DOOR_IS_OPEN 30
+#define DOOR_MIN_RANGE_BOTTOM_IF_DOOR_IS_CLOSED 20
+
+#define MAX_POSSIBLE_RANGE_BOTTOM 517
+#define MIN_MOVING_DELTA 5
 #define MIN_RANGE_DOOR_IS_OPEN 10
 #define DOOR_OPERATE_TIMEOUT 20 
 
 #include <SPI.h>
 #include <ArduinoJson.h>
-#include "utils.h"
 #include "Sensors.h"
 #include "Doorbutton.h"
 #include "Timeout.h"
 
-enum Doorstatus {Open, Closed, Opening, Closing, Error, Unkown};
+enum Doorstatus {Open, Closed, Opening, Closing, Error, PartlyOpen, Unkown};
 
 struct Range {
   public:
@@ -41,7 +43,7 @@ struct Range {
 
 class DoorSettings {
   public:
-    int max_possible_external_range = MAX_POSSIBLE_EXTERNAL_RANGE;
+    int max_possible_range_bottom = MAX_POSSIBLE_RANGE_BOTTOM;
     int min_moving_delta = MIN_MOVING_DELTA;
     int min_range_door_is_open = MIN_RANGE_DOOR_IS_OPEN;
     int door_operate_timeout = DOOR_OPERATE_TIMEOUT;
@@ -52,10 +54,12 @@ class DoorSettings {
       StaticJsonDocument<512> doc;
       DeserializationError error = deserializeJson(doc, jsonString);
       if (error) {
-        print("Failed to parse '%s' as JSON string\n", jsonString);
+        char s[500];
+        snprintf_P(s, sizeof(s), PSTR("Failed to parse '%s' as JSON string."), jsonString.c_str());
+        Serial.println(s);
         return;
       }
-      if (doc["max_possible_external_range"]) max_possible_external_range =   doc["max_possible_external_range"];
+      if (doc["max_possible_range_bottom"])   max_possible_range_bottom =   doc["max_possible_range_bottom"];
       if (doc["min_moving_delta"])            min_moving_delta =              doc["min_moving_delta"];
       if (doc["min_range_door_is_open"])      min_range_door_is_open =        doc["min_range_door_is_open"];
       if (doc["door_operate_timeout"])        min_moving_delta =              doc["door_operate_timeout"];
@@ -70,6 +74,7 @@ class Door {
     Doorstatus currentStatus = Unkown;
     Timeout movingTimout = Timeout(1000);
     Range range;
+    Range previousRange;
     Doorbutton button = Doorbutton();
     DoorSettings settings = DoorSettings();
 
@@ -85,10 +90,11 @@ class Door {
     void editSettings(String settings);
 
     static String getStatusValue(Doorstatus status);
-    Doorstatus setTopRange(int range);
+    void setTopRange(int range);
     void setBottomRange(int range);
     void setBottomRange(String range);
     Range getRange();
+    bool statusHasChanged();
 } ;
 
 #endif

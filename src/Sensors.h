@@ -13,7 +13,8 @@
 
 // Hardware PIN's
 #define PIN_RELAY        4
-#define PIN_RANGESENSOR  2
+#define PIN_RANGESENSOR_TOP  2
+#define PIN_RANGESENSOR_BOTTOM  6
 
 #define MIN_LUMINOSITY 10
 #define MAX_LUMINOSITY 750
@@ -21,7 +22,8 @@
 class Sensors {
   private:
     SHT31 sht31 = SHT31();
-    Ultrasonic ultrasonic = Ultrasonic(PIN_RANGESENSOR);
+    Ultrasonic ultrasonicTop = Ultrasonic(PIN_RANGESENSOR_TOP);
+    Ultrasonic ultrasonicBottom = Ultrasonic(PIN_RANGESENSOR_BOTTOM);
     bool started = false;
     
   public:
@@ -29,7 +31,8 @@ class Sensors {
     int temperature();
     int humidity();
     float luminosity();
-    int range();
+    int rangeTop();
+    int rangeBottom();
 };
 
 #endif
